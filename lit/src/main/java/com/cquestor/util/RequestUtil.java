@@ -29,7 +29,7 @@ public class RequestUtil extends HTTPUtil {
 
     @Override
     protected void setRequestData(HttpURLConnection connection, String requestData) throws IOException {
-        OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
+        OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream(), "UTF-8");
         out.write(requestData);
         out.flush();
         out.close();
@@ -38,7 +38,7 @@ public class RequestUtil extends HTTPUtil {
     @Override
     protected String getResponse(HttpURLConnection connection) throws IOException {
         StringBuilder result = new StringBuilder();
-        BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
         String line;
         while ((line = br.readLine()) != null) {
             result.append(line);

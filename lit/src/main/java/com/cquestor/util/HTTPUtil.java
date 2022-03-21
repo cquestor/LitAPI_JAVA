@@ -39,7 +39,7 @@ public abstract class HTTPUtil {
      * 
      * @param requestUrl 请求地址
      * @param headers    请求头
-     * @return 响应信息，包含请求URL、状态码、响应头、响应信息
+     * @return 响应信息，包含请求URL(url)、状态码(code)、响应头(header)、响应信息(text)
      * @throws IOException 请求异常
      */
     public abstract HashMap<String, Object> doGet(String requestUrl, HashMap<String, String> headers)
@@ -51,7 +51,7 @@ public abstract class HTTPUtil {
      * @param requestUrl  请求地址
      * @param headers     请求头
      * @param requestData 请求信息
-     * @return 响应信息，包含请求URL、状态码、响应头、响应信息
+     * @return 响应信息，包含请求URL(url)、状态码(code)、响应头(header)、响应信息(text)
      * @throws IOException 请求异常
      */
     public abstract HashMap<String, Object> doPost(String requestUrl, HashMap<String, String> headers,
