@@ -1,16 +1,23 @@
 package com.cquestor;
 
+import com.cquestor.builder.StudentDirector;
+import com.cquestor.entity.Response;
+import com.cquestor.exception.EncryptException;
 import com.cquestor.exception.HTTPException;
 import com.cquestor.util.APIUtil;
+import com.cquestor.util.Encrypt;
 import com.cquestor.util.RequestUtil;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.security.auth.login.LoginException;
 
 /**
  * LitAPI
@@ -30,17 +37,23 @@ public class Lit {
         System.out.println("\\____/\\___\\_\\____/_____//____//_/  \\____/_/ |_|");
 
         try {
-            login("", "");
+            String cookie = login("B19041430", "-app5896302");
+            StudentDirector.getStudent(cookie);
         } catch (HTTPException e) {
-            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (EncryptException e) {
+            e.printStackTrace();
+        } catch (LoginException e) {
             e.printStackTrace();
         }
     }
 
-    public static String login(String username, String password) throws HTTPException {
+    public static String login(String username, String password)
+            throws HTTPException, EncryptException, LoginException {
         RequestUtil request = new RequestUtil();
+        Response response = null;
         String cookie = "";
-        HashMap<String, Object> response = null;
+        String nextUrl = "";
         Map<String, List<String>> responseHeader = null;
         HashMap<String, String> headers = new HashMap<String, String>() {
             {
@@ -53,7 +66,7 @@ public class Lit {
         } catch (IOException e) {
             throw new HTTPException("请求失败，请检查网络连接！");
         }
-        responseHeader = (Map<String, List<String>>) response.get("header");
+        responseHeader = response.getHeaders();
         for (String cookiePart : responseHeader.get("Set-Cookie")) {
             cookie += cookiePart.split(";")[0] + ";";
         }
@@ -62,7 +75,64 @@ public class Lit {
         } catch (IOException e) {
             throw new HTTPException("请求失败，请检查网络连接！");
         }
-        Document doc = Jsoup.parse((String) response.get("header"));
+        Document doc = Jsoup.parse(response.getText());
+        String salt = doc.getElementById("salt").attr("value");
+        String execution = doc.getElementsByAttributeValue("name", "execution").first().attr("value");
+        String _eventId = doc.getElementsByAttributeValue("name", "_eventId").first().attr("value");
+        headers.put("cookie", cookie);
+        headers.put("content-type", "application/x-www-form-urlencoded");
+        try {
+            password = Encrypt.AES(password, salt, "1234567890abcdef");
+        } catch (Exception e) {
+            // FIXME: 频繁登录可能导致出错
+            throw new EncryptException("密码加密错误，可能是学校更新了加密逻辑！");
+        }
+        String data = String.format("username=%s&password=%s&execution=%s&_eventId=%s", username, password, execution,
+                _eventId);
+        try {
+            response = request.doPost(APIUtil.indexUrl, headers, data);
+        } catch (IOException e) {
+            throw new HTTPException("请求失败，请检查网络连接！");
+        }
+        if (response.getCode() == HttpURLConnection.HTTP_OK) {
+            throw new LoginException("登录失败，账号或密码错误！");
+        } else {
+            nextUrl = response.getHeaders().get("Location").get(0);
+            try {
+                response = request.doGet(nextUrl, headers);
+            } catch (IOException e) {
+                throw new HTTPException("请求失败，请检查网络连接！");
+            }
+            try {
+                response = request.doGet(APIUtil.indexLoginRegistryUrl, headers);
+            } catch (IOException e) {
+                throw new HTTPException("请求失败，请检查网络连接！");
+            }
+            nextUrl = response.getHeaders().get("Location").get(0);
+            try {
+                response = request.doGet(nextUrl, headers);
+            } catch (IOException e) {
+                throw new HTTPException("请求失败，请检查网络连接！");
+            }
+            nextUrl = response.getHeaders().get("Location").get(0);
+            try {
+                response = request.doGet(nextUrl, headers);
+            } catch (IOException e) {
+                throw new HTTPException("请求失败，请检查网络连接！");
+            }
+            nextUrl = response.getHeaders().get("Location").get(0);
+            try {
+                response = request.doGet(nextUrl, headers);
+            } catch (IOException e) {
+                throw new HTTPException("请求失败，请检查网络连接！");
+            }
+            nextUrl = response.getHeaders().get("Location").get(0);
+            try {
+                response = request.doGet(nextUrl, headers);
+            } catch (IOException e) {
+                throw new HTTPException("请求失败，请检查网络连接！");
+            }
+        }
         return cookie.equals("") ? null : cookie;
     }
 }

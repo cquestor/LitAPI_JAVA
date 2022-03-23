@@ -8,6 +8,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 
+import com.cquestor.entity.Response;
+
 public class RequestUtil extends HTTPUtil {
 
     @Override
@@ -48,37 +50,39 @@ public class RequestUtil extends HTTPUtil {
     }
 
     @Override
-    public HashMap<String, Object> doGet(String requestUrl, HashMap<String, String> headers) throws IOException {
-        HashMap<String, Object> result = new HashMap<>();
+    public Response doGet(String requestUrl, HashMap<String, String> headers) throws IOException {
+        Response response = new Response();
         HttpURLConnection connection = getConnection(requestUrl, headers);
         connection.setRequestMethod("GET");
         connection.setDoInput(true);
         connection.setDoOutput(false);
         connection.connect();
-        result.put("code", connection.getResponseCode());
-        result.put("url", requestUrl);
-        result.put("header", connection.getHeaderFields());
-        result.put("text", getResponse(connection));
+        response.setCode(connection.getResponseCode());
+        response.setUrl(requestUrl);
+        response.setHeaders(connection.getHeaderFields());
+        response.setText(getResponse(connection));
         connection.disconnect();
-        return result;
+        return response;
     }
 
     @Override
-    public HashMap<String, Object> doPost(String requestUrl, HashMap<String, String> headers, String requestData)
+    public Response doPost(String requestUrl, HashMap<String, String> headers, String requestData)
             throws IOException {
-        HashMap<String, Object> result = new HashMap<>();
+        Response response = new Response();
         HttpURLConnection connection = getConnection(requestUrl, headers);
         connection.setRequestMethod("POST");
         connection.setDoInput(true);
         connection.setDoOutput(true);
         connection.connect();
-        setRequestData(connection, requestData);
-        result.put("code", connection.getResponseCode());
-        result.put("url", requestUrl);
-        result.put("header", connection.getHeaderFields());
-        result.put("text", getResponse(connection));
+        if (requestData != null && !requestData.equals("")) {
+            setRequestData(connection, requestData);
+        }
+        response.setCode(connection.getResponseCode());
+        response.setUrl(requestUrl);
+        response.setHeaders(connection.getHeaderFields());
+        response.setText(getResponse(connection));
         connection.disconnect();
-        return null;
+        return response;
     }
 
 }

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.HashMap;
 
+import com.cquestor.entity.Response;
+
 public abstract class HTTPUtil {
     /**
      * 获取请求连接
@@ -39,10 +41,10 @@ public abstract class HTTPUtil {
      * 
      * @param requestUrl 请求地址
      * @param headers    请求头
-     * @return 响应信息，包含请求URL(url)、状态码(code)、响应头(header)、响应信息(text)
+     * @return 响应类，包含请求URL(url)、状态码(code)、响应头(header)、响应信息(text)
      * @throws IOException 请求异常
      */
-    public abstract HashMap<String, Object> doGet(String requestUrl, HashMap<String, String> headers)
+    protected abstract Response doGet(String requestUrl, HashMap<String, String> headers)
             throws IOException;
 
     /**
@@ -51,10 +53,10 @@ public abstract class HTTPUtil {
      * @param requestUrl  请求地址
      * @param headers     请求头
      * @param requestData 请求信息
-     * @return 响应信息，包含请求URL(url)、状态码(code)、响应头(header)、响应信息(text)
+     * @return 响应类，包含请求URL(url)、状态码(code)、响应头(header)、响应信息(text)
      * @throws IOException 请求异常
      */
-    public abstract HashMap<String, Object> doPost(String requestUrl, HashMap<String, String> headers,
+    protected abstract Response doPost(String requestUrl, HashMap<String, String> headers,
             String requestData) throws IOException;
 
 }

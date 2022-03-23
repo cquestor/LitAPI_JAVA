@@ -6,6 +6,9 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+/**
+ * 加密类
+ */
 public class Encrypt {
 
     /**
@@ -26,6 +29,6 @@ public class Encrypt {
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec);
         byte[] result = cipher.doFinal(bContent);
-        return Base64.getEncoder().encode(result).toString();
+        return Base64.getEncoder().encodeToString(result);
     }
 }
