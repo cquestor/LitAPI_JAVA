@@ -38,6 +38,7 @@ public class Lit {
 
         try {
             String cookie = login("B19041430", "-app5896302");
+            System.out.println(cookie);
             StudentDirector.getStudent(cookie);
         } catch (HTTPException e) {
             e.printStackTrace();
@@ -48,6 +49,16 @@ public class Lit {
         }
     }
 
+    /**
+     * 登录洛理门户网站获取Cookie
+     * 
+     * @param username 洛理门户登录账号（学号）
+     * @param password 洛理门户登录密码
+     * @return Cookie
+     * @throws HTTPException    网络连接异常
+     * @throws EncryptException 加密异常
+     * @throws LoginException   登录异常
+     */
     public static String login(String username, String password)
             throws HTTPException, EncryptException, LoginException {
         RequestUtil request = new RequestUtil();
@@ -84,7 +95,7 @@ public class Lit {
         try {
             password = Encrypt.AES(password, salt, "1234567890abcdef");
         } catch (Exception e) {
-            // FIXME: 频繁登录可能导致出错
+            // FIXME: 频繁登录可能导致出错，异常未区分
             throw new EncryptException("密码加密错误，可能是学校更新了加密逻辑！");
         }
         String data = String.format("username=%s&password=%s&execution=%s&_eventId=%s", username, password, execution,
@@ -95,7 +106,7 @@ public class Lit {
             throw new HTTPException("请求失败，请检查网络连接！");
         }
         if (response.getCode() == HttpURLConnection.HTTP_OK) {
-            throw new LoginException("登录失败，账号或密码错误！");
+            throw new LoginException("登录失败，账号密码错误或登录过于频繁！");
         } else {
             nextUrl = response.getHeaders().get("Location").get(0);
             try {
