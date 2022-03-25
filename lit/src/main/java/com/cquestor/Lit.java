@@ -2,6 +2,7 @@ package com.cquestor;
 
 import com.cquestor.builder.StudentDirector;
 import com.cquestor.entity.Response;
+import com.cquestor.entity.Student;
 import com.cquestor.exception.EncryptException;
 import com.cquestor.exception.HTTPException;
 import com.cquestor.util.APIUtil;
@@ -38,8 +39,8 @@ public class Lit {
 
         try {
             String cookie = login("B19041430", "-app5896302");
-            System.out.println(cookie);
-            StudentDirector.getStudent(cookie);
+            Student student = StudentDirector.getStudent(cookie);
+            System.out.println(student.toString());
         } catch (HTTPException e) {
             e.printStackTrace();
         } catch (EncryptException e) {

@@ -4,5 +4,5 @@ public abstract class StudentBuilder {
 
     protected abstract String getIndexPartByCookie();
 
-    protected abstract String getIndexPartByMemberId();
+    protected abstract String getIndexPartByMemberId(String memberIdAesEncrypt);
 }

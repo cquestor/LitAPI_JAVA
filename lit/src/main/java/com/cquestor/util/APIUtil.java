@@ -19,4 +19,6 @@ public class APIUtil {
     // 门户网站通过Cookie获取个人信息
     public static final String indexCookieInfo = "https://sec.lit.edu.cn/webvpn/LjIwNi4xNzAuMjE4LjE2Mi4xNjg=/LjIxMS4xNzUuMTQ4LjE1OC4xNTguMTcwLjk0LjE1Mi4xNTAuMjE2LjEwMi4xOTcuMjA5/portal/myCenter/getMemberInfoForCurrentMember?vpn-0";
 
+    // 门户网站通过MemberId获取个人信息
+    public static final String indexMemberIdInfo = "https://sec.lit.edu.cn/webvpn/LjIwNi4xNzAuMjE4LjE2Mi4xNjg=/LjIxMS4xNzUuMTQ4LjE1OC4xNTguMTcwLjk0LjE1Mi4xNTAuMjE2LjEwMi4xOTcuMjA5/microapplication/api/v1/index/getStudentByStudentId?vpn-0";
 }
