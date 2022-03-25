@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch AppTest",
+            "request": "launch",
+            "mainClass": "com.cquestor.AppTest",
+            "projectName": "lit"
+        },
+        {
+            "type": "java",
             "name": "Launch Current File",
             "request": "launch",
             "mainClass": "${file}",

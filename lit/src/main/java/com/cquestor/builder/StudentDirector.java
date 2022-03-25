@@ -45,6 +45,7 @@ public class StudentDirector {
             return student;
         }).thenCombine(CompletableFuture.supplyAsync(() -> {
             // TODO: 获取健康上报部分信息
+            studentBuilder.getReportPart();
             return "";
         }), (indexPart, reportPart) -> {
             // TODO: 合并门户网站信息和健康上报信息

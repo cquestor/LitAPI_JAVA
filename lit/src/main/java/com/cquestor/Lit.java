@@ -40,7 +40,7 @@ public class Lit {
         try {
             String cookie = login("B19041430", "-app5896302");
             Student student = StudentDirector.getStudent(cookie);
-            System.out.println(student.toString());
+            System.out.println(cookie);
         } catch (HTTPException e) {
             e.printStackTrace();
         } catch (EncryptException e) {
