@@ -4,6 +4,7 @@ public class Student {
     private String id; // 学号
     private String nickname; // 姓名
     private int sex; // 性别
+    private int age; // 年龄
     private String phone; // 手机号
     private String idNumber; // 身份证号码
     private int state; // 学籍状态
@@ -19,6 +20,13 @@ public class Student {
     private String className; // 班级名
     private int eductionalSystem; // 学制
     private String category; // 科目
+    private String nativeAddress; // 家庭住址
+    private String localAddress; // 学校住址
+    private String instructorName; // 辅导员姓名
+    private String nation; // 名族
+    private String outlook; // 政治面貌
+    private String origin; // 生源地
+    private String imagePath; // 照片
 
     public String getId() {
         return id;
@@ -42,6 +50,14 @@ public class Student {
 
     public void setSex(int sex) {
         this.sex = sex;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
     }
 
     public String getPhone() {
@@ -164,14 +180,72 @@ public class Student {
         this.category = category;
     }
 
+    public String getNativeAddress() {
+        return nativeAddress;
+    }
+
+    public void setNativeAddress(String nativeAddress) {
+        this.nativeAddress = nativeAddress;
+    }
+
+    public String getLocalAddress() {
+        return localAddress;
+    }
+
+    public void setLocalAddress(String localAddress) {
+        this.localAddress = localAddress;
+    }
+
+    public String getInstructorName() {
+        return instructorName;
+    }
+
+    public void setInstructorName(String instructorName) {
+        this.instructorName = instructorName;
+    }
+
+    public String getNation() {
+        return nation;
+    }
+
+    public void setNation(String nation) {
+        this.nation = nation;
+    }
+
+    public String getOutlook() {
+        return outlook;
+    }
+
+    public void setOutlook(String outlook) {
+        this.outlook = outlook;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
     @Override
     public String toString() {
-        return "Student [birthday=" + birthday + ", category=" + category + ", classCode=" + classCode + ", className="
-                + className + ", eductionalSystem=" + eductionalSystem + ", facultiesCode=" + facultiesCode
-                + ", facultiesName=" + facultiesName + ", grade=" + grade + ", id=" + id + ", idNumber=" + idNumber
-                + ", lastLoginTime=" + lastLoginTime + ", majorCode=" + majorCode + ", majorName=" + majorName
-                + ", memberIdAesEncrypt=" + memberIdAesEncrypt + ", nickname=" + nickname + ", phone=" + phone
-                + ", sex=" + sex + ", state=" + state + "]";
+        return "Student [age=" + age + ", birthday=" + birthday + ", category=" + category + ", classCode=" + classCode
+                + ", className=" + className + ", eductionalSystem=" + eductionalSystem + ", facultiesCode="
+                + facultiesCode + ", facultiesName=" + facultiesName + ", grade=" + grade + ", id=" + id + ", idNumber="
+                + idNumber + ", imagePath=" + imagePath + ", instructorName=" + instructorName + ", lastLoginTime="
+                + lastLoginTime + ", localAddress=" + localAddress + ", majorCode=" + majorCode + ", majorName="
+                + majorName + ", memberIdAesEncrypt=" + memberIdAesEncrypt + ", nation=" + nation + ", nativeAddress="
+                + nativeAddress + ", nickname=" + nickname + ", origin=" + origin + ", outlook=" + outlook + ", phone="
+                + phone + ", sex=" + sex + ", state=" + state + "]";
     }
 
 }

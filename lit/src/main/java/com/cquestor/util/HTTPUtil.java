@@ -34,7 +34,7 @@ public abstract class HTTPUtil {
      * @return 响应信息
      * @throws IOException 获取输入流异常
      */
-    protected abstract String getResponse(HttpURLConnection connection) throws IOException;
+    protected abstract String getResponse(HttpURLConnection connection, String code) throws IOException;
 
     /**
      * 发送GET请求

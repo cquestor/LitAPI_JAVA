@@ -11,9 +11,11 @@ import com.cquestor.util.RequestUtil;
 
 public class SubStudentBuilder extends StudentBuilder {
     private String cookie; // 登录Cookie
+    private String token; // 健康上报平台token
 
-    public SubStudentBuilder(String cookie) {
+    public SubStudentBuilder(String cookie, String token) {
         this.cookie = cookie;
+        this.token = token;
     }
 
     @Override
@@ -60,39 +62,57 @@ public class SubStudentBuilder extends StudentBuilder {
 
     @Override
     protected String getReportPart() {
+        // FIXME: 家庭住址省市编码转换
         Response response = null;
-        String nextUrl = null;
         RequestUtil request = new RequestUtil();
         HashMap<String, String> headers = new HashMap<>() {
             {
                 put("user-agent",
-                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.82Safari/537.36");
-                put("content-type", "application/json");
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.82 Safari/537.36");
             }
         };
         headers.put("cookie", this.cookie);
-        String data = JSON.toJSONString(new HashMap<String, String>() {
+        headers.put("token", this.token);
+        try {
+            response = request.doGet(APIUtil.getInfoFromReport, headers);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        JSONObject jsonResponse = JSON.parseObject(response.getText());
+        jsonResponse = JSON.parseObject(JSON.toJSONString(jsonResponse.get("data")));
+        String url = String.format(
+                "https://sec.lit.edu.cn/webvpn/LjIwNi4xNzAuMjE4LjE2Mg==/LjIwNi4xNjMuMjA1LjE2NC45OS4xNjkuMTQ5LjE1MC45Ni4yMDcuMTYxLjIxNC4xNDUuMjAzLjIwMi4xNjguOTQuMTk4LjE2Ng==/wms/getInstructor?vpn-0&amp;teamId=%s&amp;organizationName=%s&amp;userOrganizationId=%s",
+                jsonResponse.getString("teamId"), jsonResponse.getString("organizationName"),
+                jsonResponse.getString("userOrganizationId"));
+        try {
+            response = request.doGet(url, headers);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        JSONObject jsonInfo = JSON.parseObject(response.getText());
+        jsonInfo = JSON.parseObject(JSON.toJSONString(jsonInfo.get("data")));
+        for (String key : jsonInfo.keySet()) {
+            jsonResponse.put(key, jsonInfo.get(key));
+        }
+        return JSON.toJSONString(jsonResponse);
+    }
+
+    @Override
+    protected String getEducationPart() {
+        Response response = null;
+        RequestUtil request = new RequestUtil();
+        HashMap<String, String> headers = new HashMap<>() {
             {
-                put("pcAccessAppId", "55e5215cf4254ec1aafb0c859c2f4462");
-                put("pcAccessCategory", "0");
+                put("user-agent",
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.82 Safari/537.36");
             }
-        });
+        };
+        headers.put("cookie", this.cookie);
         try {
-            response = request.doPost(
-                    "https://sec.lit.edu.cn/webvpn/LjIwNi4xNzAuMjE4LjE2Mi4xNjg=/LjIxMS4xNzUuMTQ4LjE1OC4xNTguMTcwLjk0LjE1Mi4xNTAuMjE2LjEwMi4xOTcuMjA5/portal/myCenter/insertPortalPcAccessIntoRedis?vpn-0",
-                    headers, data);
+            response = request.doGet(APIUtil.educationInfo, headers, "GBK");
         } catch (IOException e) {
             e.printStackTrace();
         }
-        headers.remove("content-type");
-        try {
-            response = request.doGet(
-                    "https://sec.lit.edu.cn/webvpn/LjIwNi4xNzAuMjE4LjE2Mg==/LjIwNi4xNjMuMjA1LjE2NC45OS4xNjkuMTQ5LjE1MC45Ni4yMDcuMTYxLjIxNC4xNDUuMjAzLjIwMi4xNjguOTQuMTk4LjE2Ng==/?vpn-0", headers);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        nextUrl = response.getHeaders().get("Location").get(0);
-        System.out.println(nextUrl);
-        return null;
+        return response.getText();
     }
 }

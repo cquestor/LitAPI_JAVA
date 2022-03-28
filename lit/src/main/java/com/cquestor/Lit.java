@@ -1,5 +1,6 @@
 package com.cquestor;
 
+import com.alibaba.fastjson.JSON;
 import com.cquestor.builder.StudentDirector;
 import com.cquestor.entity.Response;
 import com.cquestor.entity.Student;
@@ -17,6 +18,7 @@ import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import javax.security.auth.login.LoginException;
 
@@ -39,8 +41,9 @@ public class Lit {
 
         try {
             String cookie = login("B19041430", "-app5896302");
-            Student student = StudentDirector.getStudent(cookie);
-            System.out.println(cookie);
+            String token = registry(cookie);
+            Student student = StudentDirector.getStudent(cookie, token);
+            System.out.println(student.toString());
         } catch (HTTPException e) {
             e.printStackTrace();
         } catch (EncryptException e) {
@@ -146,5 +149,114 @@ public class Lit {
             }
         }
         return cookie.equals("") ? null : cookie;
+    }
+
+    /**
+     * 认证其他平台（健康上报平台、教务系统）
+     * 
+     * @param cookie 门户网站登录Cookie
+     * @return 健康上报平台token
+     */
+    public static String registry(String cookie) {
+        RequestUtil request = new RequestUtil();
+        CompletableFuture<String> tasks = CompletableFuture.supplyAsync(() -> {
+            // 健康上报平台认证
+            Response response = null;
+            String nextUrl = null;
+            HashMap<String, String> headers = new HashMap<>() {
+                {
+                    put("user-agent",
+                            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.82Safari/537.36");
+                    put("content-type", "application/json");
+                }
+            };
+            headers.put("cookie", cookie);
+            String data = JSON.toJSONString(new HashMap<String, String>() {
+                {
+                    put("pcAccessAppId", "55e5215cf4254ec1aafb0c859c2f4462");
+                    put("pcAccessCategory", "0");
+                }
+            });
+            try {
+                response = request.doPost(APIUtil.redisUrl, headers, data);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            headers.remove("content-type");
+            try {
+                response = request.doGet(APIUtil.getTokenFromIndex, headers);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            nextUrl = response.getHeaders().get("Location").get(0);
+            try {
+                response = request.doGet(nextUrl, headers);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            nextUrl = response.getHeaders().get("Location").get(0);
+            try {
+                response = request.doGet(nextUrl, headers);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                response = request.doGet(APIUtil.getTokenFromReport, headers);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return response.getText().split("=")[1];
+        }).thenCombine(CompletableFuture.supplyAsync(() -> {
+            // 教务系统认证
+            Response response = null;
+            String nextUrl = null;
+            HashMap<String, String> headers = new HashMap<>() {
+                {
+                    put("Content-Type", "application/json");
+                    put("User-Agent",
+                            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.82 Safari/537.36");
+                }
+            };
+            headers.put("cookie", cookie);
+            String data = JSON.toJSONString(new HashMap<>() {
+                {
+                    put("pcAccessAppId", "6b35d7c9271d47a1be384795d536dad0");
+                    put("pcAccessCategory", "0");
+                }
+            });
+            try {
+                response = request.doPost(APIUtil.redisUrl, headers, data);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                response = request.doGet(APIUtil.educationCookie, headers);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            nextUrl = response.getHeaders().get("Location").get(0);
+            try {
+                response = request.doGet(nextUrl, headers);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            nextUrl = response.getHeaders().get("Location").get(0);
+            try {
+                response = request.doGet(nextUrl, headers);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            nextUrl = response.getHeaders().get("Location").get(0);
+            try {
+                response = request.doGet(nextUrl, headers);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return "";
+        }), (reportPart, educationPart) -> {
+            // 合并信息
+            return reportPart;
+        });
+        return tasks.join();
     }
 }
