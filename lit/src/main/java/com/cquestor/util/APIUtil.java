@@ -16,6 +16,9 @@ public class APIUtil {
     // 门户网站认证地址
     public static final String indexLoginRegistryUrl = "https://sec.lit.edu.cn/webvpn/LjIwNi4xNzAuMjE4LjE2Mg==/LjIxMS4xNzUuMTQ4LjE1OC4xNTguMTcwLjk0LjE1Mi4xNTAuMjE2LjEwMi4xOTcuMjA5LjE2MC4xNTguOTk=/portal/login/pcLogin?vpn-0";
 
+    // 门户网站退出登录接口
+    public static final String logoutUrl = "https://sec.lit.edu.cn/webvpn/LjIwNi4xNzAuMjE4LjE2Mi4xNjg=/LjIxMS4xNzUuMTQ4LjE1OC4xNTguMTcwLjk0LjE1Mi4xNTAuMjE2LjEwMi4xOTcuMjA5/portal/login/logout?vpn-0";
+
     // 门户网站通过Cookie获取个人信息
     public static final String indexCookieInfo = "https://sec.lit.edu.cn/webvpn/LjIwNi4xNzAuMjE4LjE2Mi4xNjg=/LjIxMS4xNzUuMTQ4LjE1OC4xNTguMTcwLjk0LjE1Mi4xNTAuMjE2LjEwMi4xOTcuMjA5/portal/myCenter/getMemberInfoForCurrentMember?vpn-0";
 

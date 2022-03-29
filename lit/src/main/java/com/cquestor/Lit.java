@@ -38,12 +38,15 @@ public class Lit {
         System.out.println(" / /   / / / / / / / __/  \\__ \\ / / / / / / /_/ /");
         System.out.println("/ /___/ /_/ / /_/ / /___ ___/ // / / /_/ / _, _/ ");
         System.out.println("\\____/\\___\\_\\____/_____//____//_/  \\____/_/ |_|");
+        System.out.println();
+        System.out.println("使用文档：https://github.com/cquestor/LitAPI_JAVA/wiki");
 
         try {
             String cookie = login("B19041430", "-app5896302");
-            String token = registry(cookie);
-            Student student = StudentDirector.getStudent(cookie, token);
-            System.out.println(student.toString());
+            logout(cookie);
+            // String token = registry(cookie);
+            // Student student = StudentDirector.getStudent(cookie, token);
+            // System.out.println(student.toString());
         } catch (HTTPException e) {
             e.printStackTrace();
         } catch (EncryptException e) {
@@ -149,6 +152,66 @@ public class Lit {
             }
         }
         return cookie.equals("") ? null : cookie;
+    }
+
+    /**
+     * 退出登录，注销Cookie
+     * 
+     * @param cookie 登录Cookie
+     * @return 成功返回true，否则返回false
+     * @throws HTTPException 网络连接异常
+     */
+    public static boolean logout(String cookie) throws HTTPException {
+        Response response = null;
+        String nextUrl = null;
+        RequestUtil request = new RequestUtil();
+        HashMap<String, String> headers = new HashMap<>() {
+            {
+                put("user-agent",
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.84 Safari/537.36");
+            }
+        };
+        headers.put("cookie", cookie);
+        try {
+            response = request.doGet(APIUtil.logoutUrl, headers);
+        } catch (IOException e) {
+            throw new HTTPException("请求失败，请检查网络连接！");
+        }
+        nextUrl = response.getHeaders().get("Location").get(0);
+        try {
+            response = request.doGet(nextUrl, headers);
+        } catch (IOException e) {
+            throw new HTTPException("请求失败，请检查网络连接！");
+        }
+        nextUrl = response.getHeaders().get("Location").get(0);
+        try {
+            response = request.doGet(nextUrl, headers);
+        } catch (IOException e) {
+            throw new HTTPException("请求失败，请检查网络连接！");
+        }
+        nextUrl = response.getHeaders().get("Location").get(0);
+        try {
+            response = request.doGet(nextUrl, headers);
+        } catch (IOException e) {
+            throw new HTTPException("请求失败，请检查网络连接！");
+        }
+        nextUrl = response.getHeaders().get("Location").get(0);
+        try {
+            response = request.doGet(nextUrl, headers);
+        } catch (IOException e) {
+            throw new HTTPException("请求失败，请检查网络连接！");
+        }
+        nextUrl = response.getHeaders().get("Location").get(0);
+        try {
+            response = request.doGet(nextUrl, headers);
+        } catch (IOException e) {
+            throw new HTTPException("请求失败，请检查网络连接！");
+        }
+        if (response.getCode() == HttpURLConnection.HTTP_OK) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
