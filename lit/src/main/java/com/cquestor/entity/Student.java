@@ -23,7 +23,7 @@ public class Student {
     private String nativeAddress; // 家庭住址
     private String localAddress; // 学校住址
     private String instructorName; // 辅导员姓名
-    private String nation; // 名族
+    private String nation; // 民族
     private String outlook; // 政治面貌
     private String origin; // 生源地
     private String imagePath; // 照片

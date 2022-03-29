@@ -5,6 +5,7 @@ import java.util.concurrent.CompletableFuture;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.cquestor.entity.Student;
+import com.cquestor.exception.HTTPException;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -24,13 +25,23 @@ public class StudentDirector {
         CompletableFuture<String> tasks = CompletableFuture.supplyAsync(() -> {
             // 通过Cookie获取门户网站学生信息
             SubStudentBuilder studentBuilder = new SubStudentBuilder(cookie, token);
-            String result = studentBuilder.getIndexPartByCookie();
+            String result = null;
+            try {
+                result = studentBuilder.getIndexPartByCookie();
+            } catch (HTTPException e) {
+                e.printStackTrace();
+            }
             return result;
         }).thenApply(lastResult -> {
             // 通过memberId获取门户网站部分信息
             SubStudentBuilder studentBuilder = new SubStudentBuilder(cookie, token);
             JSONObject jsonInfo = JSON.parseObject(lastResult);
-            String result = studentBuilder.getIndexPartByMemberId(jsonInfo.getString("memberIdAesEncrypt"));
+            String result = null;
+            try {
+                result = studentBuilder.getIndexPartByMemberId(jsonInfo.getString("memberIdAesEncrypt"));
+            } catch (HTTPException e) {
+                e.printStackTrace();
+            }
             JSONObject jsonNow = JSON.parseObject(result);
             for (String key : jsonNow.keySet()) {
                 jsonInfo.put(key, jsonNow.getString(key));
@@ -39,7 +50,12 @@ public class StudentDirector {
         }).thenCombine(CompletableFuture.supplyAsync(() -> {
             // 获取健康上报平台信息
             SubStudentBuilder studentBuilder = new SubStudentBuilder(cookie, token);
-            String result = studentBuilder.getReportPart();
+            String result = null;
+            try {
+                result = studentBuilder.getReportPart();
+            } catch (HTTPException e) {
+                e.printStackTrace();
+            }
             return result;
         }), (indexPart, reportPart) -> {
             // 合并个人信息
@@ -52,7 +68,12 @@ public class StudentDirector {
         }).thenCombine(CompletableFuture.supplyAsync(() -> {
             // 获取教务系统个人信息
             SubStudentBuilder studentBuilder = new SubStudentBuilder(cookie, token);
-            String result = studentBuilder.getEducationPart();
+            String result = null;
+            try {
+                result = studentBuilder.getEducationPart();
+            } catch (HTTPException e) {
+                e.printStackTrace();
+            }
             Document doc = Jsoup.parse(result);
             Element table = doc.getElementsByTag("table").get(0);
             String nation = table.getElementsByTag("tr").get(4).getElementsByTag("td").get(3).text();

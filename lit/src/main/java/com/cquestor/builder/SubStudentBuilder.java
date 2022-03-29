@@ -6,6 +6,7 @@ import java.util.HashMap;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.cquestor.entity.Response;
+import com.cquestor.exception.HTTPException;
 import com.cquestor.util.APIUtil;
 import com.cquestor.util.RequestUtil;
 
@@ -19,7 +20,7 @@ public class SubStudentBuilder extends StudentBuilder {
     }
 
     @Override
-    public String getIndexPartByCookie() {
+    public String getIndexPartByCookie() throws HTTPException {
         RequestUtil request = new RequestUtil();
         Response response = null;
         HashMap<String, String> headers = new HashMap<String, String>() {
@@ -32,14 +33,14 @@ public class SubStudentBuilder extends StudentBuilder {
         try {
             response = request.doPost(APIUtil.indexCookieInfo, headers, null);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new HTTPException("请求失败，请检查网络连接！");
         }
         JSONObject jsonResponse = JSON.parseObject(response.getText());
         return JSON.toJSONString(jsonResponse.get("obj"));
     }
 
     @Override
-    protected String getIndexPartByMemberId(String memberIdAesEncrypt) {
+    protected String getIndexPartByMemberId(String memberIdAesEncrypt) throws HTTPException {
         RequestUtil request = new RequestUtil();
         Response response = null;
         HashMap<String, String> headers = new HashMap<String, String>() {
@@ -54,14 +55,14 @@ public class SubStudentBuilder extends StudentBuilder {
         try {
             response = request.doPost(APIUtil.indexMemberIdInfo, headers, data);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new HTTPException("请求失败，请检查网络连接！");
         }
         JSONObject jsonResponse = JSON.parseObject(response.getText());
         return JSON.toJSONString(jsonResponse.get("obj"));
     }
 
     @Override
-    protected String getReportPart() {
+    protected String getReportPart() throws HTTPException {
         // FIXME: 家庭住址省市编码转换
         Response response = null;
         RequestUtil request = new RequestUtil();
@@ -76,7 +77,7 @@ public class SubStudentBuilder extends StudentBuilder {
         try {
             response = request.doGet(APIUtil.getInfoFromReport, headers);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new HTTPException("请求失败，请检查网络连接！");
         }
         JSONObject jsonResponse = JSON.parseObject(response.getText());
         jsonResponse = JSON.parseObject(JSON.toJSONString(jsonResponse.get("data")));
@@ -87,7 +88,7 @@ public class SubStudentBuilder extends StudentBuilder {
         try {
             response = request.doGet(url, headers);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new HTTPException("请求失败，请检查网络连接！");
         }
         JSONObject jsonInfo = JSON.parseObject(response.getText());
         jsonInfo = JSON.parseObject(JSON.toJSONString(jsonInfo.get("data")));
@@ -98,7 +99,7 @@ public class SubStudentBuilder extends StudentBuilder {
     }
 
     @Override
-    protected String getEducationPart() {
+    protected String getEducationPart() throws HTTPException {
         Response response = null;
         RequestUtil request = new RequestUtil();
         HashMap<String, String> headers = new HashMap<>() {
@@ -111,7 +112,7 @@ public class SubStudentBuilder extends StudentBuilder {
         try {
             response = request.doGet(APIUtil.educationInfo, headers, "GBK");
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new HTTPException("请求失败，请检查网络连接！");
         }
         return response.getText();
     }

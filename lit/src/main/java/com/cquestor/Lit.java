@@ -99,7 +99,6 @@ public class Lit {
         try {
             password = Encrypt.AES(password, salt, "1234567890abcdef");
         } catch (Exception e) {
-            // FIXME: 频繁登录可能导致出错，异常未区分
             throw new EncryptException("密码加密错误，可能是学校更新了加密逻辑！");
         }
         String data = String.format("username=%s&password=%s&execution=%s&_eventId=%s", username, password, execution,
@@ -110,6 +109,7 @@ public class Lit {
             throw new HTTPException("请求失败，请检查网络连接！");
         }
         if (response.getCode() == HttpURLConnection.HTTP_OK) {
+            // FIXME: 频繁登录可能导致出错，异常未区分
             throw new LoginException("登录失败，账号密码错误或登录过于频繁！");
         } else {
             nextUrl = response.getHeaders().get("Location").get(0);
